@@ -1,0 +1,113 @@
+﻿@*@model IEnumerable<Inventory_mvc.Models.Purchase_Order_Record>*@
+@model PagedList.IPagedList<Inventory_mvc.Models.Purchase_Order_Record>
+@using PagedList.Mvc;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+@{
+    ViewBag.Title = "Purchase Orders";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>ListPurchaseOrders</title>
+</head>
+<body>
+    <h1 style="">Purchase Order Record</h1>
+    <br />
+
+
+  
+        @Html.ActionLink("Create New", "RaisePurchaseOrder", "Purchase", new { @class = "btn btn-success ", @style="margin-bottom: 10px;" })
+ 
+
+
+
+    <div>
+        @using (Html.BeginForm("ListPurchaseOrders", "Purchase", FormMethod.Get))
+        {
+
+
+            <div class="form-inline">
+                @Html.DropDownList("searchBy", new List<SelectListItem> {
+            new SelectListItem{Text = "PO Number", Value="orderNo",},
+            new SelectListItem{ Text= "Status", Value="status"},
+            new SelectListItem{ Text= "Supplier", Value= "supplier"} }, "Show All", new { @class = "form-control" })
+
+                <input type="text" name="search" class="form-control" />
+                <input type="submit" value="search" class="btn btn-primary"/>
+
+            </div>
+
+
+        }
+
+    </div>
+    <br />
+    <br />
+
+    <table class="table">
+        <tr>
+            <th>
+          
+                @Html.Label("Order Number")
+            </th>
+            <th>
+
+                @Html.Label("Supplier Code")
+            </th>
+            <th>
+        
+                @Html.Label("Date Ordered")
+            </th>
+            <th>
+
+                @Html.Label("Status")
+            </th>
+            <th>
+          
+                @Html.Label("Expected Delivery")
+            </th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model)
+            {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.orderNo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.supplierCode)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.date)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.status)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.expectedDeliveryDate)
+                </td>
+                <td>
+
+                    @Html.ActionLink("Details", "gen", "POGenerator", new { id = item.orderNo }, null) |
+                    @Html.ActionLink("PDF", "GeneratePDF", "POGenerator", new { id = item.orderNo }, null) 
+
+                   
+                </td>
+            </tr>
+        }
+
+    </table>
+
+    Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+
+    @Html.PagedListPager(Model, page => Url.Action("ListPurchaseOrders",
+                     new { search = ViewBag.Search, searchBy = ViewBag.SearchBy,page }))
+</body>
+</html>
+

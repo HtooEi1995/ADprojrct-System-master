@@ -1,0 +1,124 @@
+﻿@model PagedList.IPagedList<Inventory_mvc.Models.Stationery>
+
+@using PagedList.Mvc;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+
+@{
+    ViewBag.Title = "Browse Stationery Catalogue";
+
+    List<Inventory_mvc.Models.Category> categoryList = ViewBag.CategoryList;
+
+    var successMessage = TempData["SuccessMessage"];
+    var errorMessage = TempData["ErrorMessage"];    
+}
+
+
+<h2>Stationery Catalogue</h2>
+
+
+
+@using (Html.BeginForm("BrowseCatalogue", "RaiseRequisition", FormMethod.Get, new { @class = "form-inline" }))
+{
+
+    <table class="table pagination">
+        <tr>
+            <td>
+                @Html.Label("Description", new { @class = "col-sm-2 col-form-label" })
+            </td>
+            <td>
+                @Html.TextBox("searchString", ViewBag.SearchString as string, new { @class = "form-control mx-sm-3" })
+            </td>
+            <td>
+                @Html.Label("Category", new { @class = "col-sm-2 col-form-label" })
+            </td>
+            <td>
+                <select name="categoryID" class="form-control">
+                    <option value="-1" selected="selected">All</option>
+                    @foreach (var category in categoryList)
+                    {
+                        string selected = "";
+
+                        if (ViewBag.CategoryID == category.categoryID.ToString())
+                        {
+                            selected = "selected";
+                        }
+                        <option value="@category.categoryID" @selected> @category.categoryName </option>
+                    }
+                </select>
+            </td>
+            <td>
+                <input type="submit" class="btn btn-primary" value="Search" />
+
+                @Html.ActionLink("Reset", "ResetCatalogue", "RaiseRequisition", null, new { @class = "btn btn-danger" })
+            </td>
+        </tr>
+    </table>
+}
+
+
+@if (successMessage != null)
+{
+    <div class="alert alert-success">
+        @successMessage.ToString()
+    </div>
+}
+
+@if (errorMessage != null)
+{
+    <div class="alert alert-danger">
+        @errorMessage.ToString()
+    </div>
+}
+
+
+
+<table class="table table-responsive">
+    <tr>
+        <th>
+            @Html.Label("Category")
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.FirstOrDefault().description)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.FirstOrDefault().unitOfMeasure)
+        </th>
+        <th>
+            @Html.Label("Add Request")
+        </th>
+    </tr>
+
+    @foreach (var item in Model)
+            {
+                using (Html.BeginForm("AddNewRequestItem", "RaiseRequisition", new { itemCode = item.itemCode, searchString = ViewBag.SearchString, categoryID = ViewBag.CategoryID, page = ViewBag.Page }, FormMethod.Post, new { @class = "form" }))
+                {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Category.categoryName)
+                </td>
+                <td>
+                    @Html.HiddenFor(modelItem => item.itemCode)
+                    @Html.DisplayFor(modelItem => item.description)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.unitOfMeasure)
+                </td>
+                <td>
+                    <div class="form-inline">
+                        <input type="number" name="quantity" value="0" min="1" max="100" class="form-control" placeholder="Quantity" />
+                        <input type="submit" value="Add" class="btn btn-success" />
+                    </div>
+                </td>
+            </tr>
+        }
+    }
+</table>
+        Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+
+        @Html.PagedListPager(Model, page => Url.Action("BrowseCatalogue",
+                     new { searchString = ViewBag.SearchString, categoryID = ViewBag.CategoryID, page }))
+
+
+        @Html.ActionLink("Go To Requisition Form", "NewRequisition", "RaiseRequisition", null, new { @class = "btn btn-primary" })
+
+<br />

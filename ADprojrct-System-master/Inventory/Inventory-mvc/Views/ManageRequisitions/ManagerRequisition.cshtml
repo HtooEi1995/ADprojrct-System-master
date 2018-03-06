@@ -1,0 +1,117 @@
+﻿@*@model IEnumerable<Inventory_mvc.Models.Requisition_Record>*@
+@model PagedList.IPagedList<Inventory_mvc.Models.Requisition_Record>
+@using PagedList.Mvc;
+@using Inventory_mvc.Utilities;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+
+
+@{
+    ViewBag.Title = "View";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var warningMessage = TempData["WarningMessage"];
+
+}
+
+<h2>Manage Requisition</h2>
+<br />
+@if (warningMessage != null)
+{
+    <div class="alert alert-warning">
+        @warningMessage.ToString()
+    </div>
+}
+<br />
+<table class="table">
+    <tr>
+        <th>
+            @Html.Label("Requisition No:")
+        </th>
+        <th>
+            @Html.Label("Department Name")
+        </th>
+        <th>
+            @Html.Label("Requester Name")
+        </th>
+        <th>
+            @Html.Label("Approving Name")
+        </th>
+        <th>
+            @Html.Label("Approved Date")
+        </th>
+        <th>
+            @Html.Label("Status")
+        </th>
+        <th>
+            @Html.Label("Requested Date")
+        </th>
+        <th>
+            @Html.Label("Remarks")
+        </th>
+    </tr>
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.requisitionNo)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Department.departmentName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.User.name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.User1.name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.approveDate)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.status)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.requestDate)
+        </td>
+        <td>
+             @if (item.status == RequisitionStatus.PENDING_APPROVAL)
+             {
+                <input type="text" id="@item.requisitionNo" class="form-control" />
+             }
+        </td>
+        <td>
+            @{
+                if (item.status == RequisitionStatus.PENDING_APPROVAL)
+                {
+                    <a href="#" onclick="Approve(@item.requisitionNo)">Approve</a> @:|
+                    <a href="#" onclick="Reject(@item.requisitionNo)">Reject</a> @:|
+
+                }
+                <a href="#" onclick="Details(@item.requisitionNo)">Details</a>
+          
+            }
+        </td>
+    </tr>
+}
+
+</table>
+
+Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+
+@Html.PagedListPager(Model, page => Url.Action("ManagerRequisition",
+                     new { page }))
+
+<script>
+
+    function Approve(No) {
+        window.location.href = '@Url.Action("ApproveRequisition", "ManageRequisitions")?ID=' + No + "&remark=" + document.getElementById(No.toString()).value;
+        }
+
+    function Reject(No) {
+        window.location.href = '@Url.Action("RejectRequisition", "ManageRequisitions")?ID=' + No + "&remark=" + document.getElementById(No.toString()).value;
+    }
+
+    function Details(No) {
+        window.location.href = '@Url.Action("RequisitionDetails", "ManageRequisitions")?ID=' + No;
+    }
+
+</script>

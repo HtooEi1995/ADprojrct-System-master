@@ -1,0 +1,110 @@
+﻿@model IEnumerable<Inventory_mvc.ViewModel.SupplierViewModel>
+
+@using Inventory_mvc.Utilities;
+
+@{
+    ViewBag.Title = "Supplier List";
+
+    var successMessage = TempData["SuccessMessage"];
+    var errorMessage = TempData["ErrorMessage"];
+
+}
+
+<h2>Supplier List</h2>
+
+<br />
+
+<div>
+    <p>
+        @if (successMessage != null)
+        {
+            <div class="alert alert-success">
+                @successMessage.ToString()
+            </div>
+        }
+
+        @if (errorMessage != null)
+        {
+            <div class="alert alert-danger">
+                @errorMessage.ToString()
+            </div>
+        }
+    </p>
+</div>
+
+
+@if (ViewBag.RoleID != (int) UserRoles.RoleID.StoreClerk)
+{
+    <p>
+        @Html.ActionLink("Create New Supplier", "Create")
+    </p>
+}
+
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.SupplierCode)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.SupplierName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ContactName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.PhoneNo)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.FaxNo)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Address)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.GSTNo)
+        </th>
+        @if (ViewBag.RoleID != (int) UserRoles.RoleID.StoreClerk)
+        {
+            <th></th>
+        }
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.SupplierCode)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SupplierName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ContactName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PhoneNo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FaxNo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Address)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.GSTNo)
+            </td>
+            @if (ViewBag.RoleID != (int)UserRoles.RoleID.StoreClerk)
+            {
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.SupplierCode }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.SupplierCode })
+                </td>
+            }
+        </tr>
+    }
+
+</table>
+
+
+

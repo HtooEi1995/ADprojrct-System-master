@@ -1,0 +1,112 @@
+﻿@model Inventory_mvc.Models.User
+
+@{
+    ViewBag.Title = "Edit";
+    var successMessage = TempData["SuccessMessage"];
+    var errorMessage = TempData["ErrorMessage"];
+    //List<string> userList = ViewBag.RoleList;
+}
+
+<h2>Edit</h2>
+
+
+@using (Html.BeginForm("Edit","User",FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        <h4>User</h4>
+        <hr />
+        <input type="hidden" name="UserID" value="@Model.userID" />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.userID)
+        @Html.HiddenFor(model => model.password)
+
+        
+        <div class="form-group">
+            @Html.LabelFor(model => model.name, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-4">
+                @Html.EditorFor(model => model.name, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.name, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.contactNo, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.contactNo, new { style = "width:360px;", placeholder = "", htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.contactNo, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.address, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-4">
+                @Html.EditorFor(model => model.address, new { htmlAttributes = new { @class = "form-control"} })
+                @Html.ValidationMessageFor(model => model.address, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        @Html.HiddenFor(model => model.role)
+  
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.departmentCode, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-5">
+                @Html.TextBoxFor(model => model.departmentCode, new { style = "width:360px;", @readonly = "readonly", htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.departmentCode, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.userEmail, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-4">
+                @Html.EditorFor(model => model.userEmail, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.userEmail, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        
+        
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-lg btn-success" />
+                <input type="button" value="Change Password" class="btn btn-lg btn btn-primary" onclick="location.href='@Url.Action("ChangePassword","User")'" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    <p>
+        @if (successMessage != null)
+        {
+            <div class="alert alert-success">
+                @successMessage.ToString()
+            </div>
+        }
+
+        @if (errorMessage != null)
+        {
+            <div class="alert alert-danger">
+                @errorMessage.ToString()
+            </div>
+        }
+    </p>
+</div>
+
+<div>
+    @if (Convert.ToInt32(HttpContext.Current.Session["role"]) == 5)
+    {
+        @Html.ActionLink("Cancel", "SMUserList")
+    }
+    else
+    {
+        @Html.ActionLink("Cancel", "UserList")
+    }
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -1,0 +1,112 @@
+﻿@model Inventory_mvc.Models.User
+
+@{
+    ViewBag.Title = "Delegate";
+    var NO_DATE_ERROR_MESSAGE = TempData["NO_Date_ERROR_MESSAGE"];
+}
+<link type="text/css" rel="Stylesheet"
+      href="http://ajax.microsoft.com/ajax/jquery.ui/1.8.6/themes/
+smoothness/jquery-ui.css" />
+
+<style type="text/css">
+    .ui-datepicker {
+        background: #0b4478;
+        border: 1px solid #555;
+        color: #EE9;
+    }
+</style>
+
+<h2>Delegate</h2>
+<script>
+
+   
+    $(document).ready(function(){
+$("#delend").attr("disabled", "disable");// add end date to disable
+
+    });
+
+  $( function() {
+        $("#delstart").datepicker(
+        {
+            minDate: 0, dateFormat: 'dd-mm-yy', 
+            beforeShowDay: $.datepicker.noWeekends ,
+            onSelect: function (date) {
+
+                $("#delend").removeAttr("disabled");// remove disable after select startdate
+
+            
+            }
+        }
+    );
+  });
+
+  $(function () {
+      
+      $("#delend").datepicker(
+      {
+          beforeShowDay: $.datepicker.noWeekends,
+      
+        beforeShow: function () {
+            $(this).datepicker('option', 'minDate', $('#delstart').val());
+         
+        },
+        dateFormat: 'dd-mm-yy'
+    });
+  });
+ 
+  
+</script>
+<div>
+    <h4>User</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        
+        <dt>
+            @Html.DisplayNameFor(model => model.name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.roleInfo.roleName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.roleInfo.roleName)
+        </dd>
+
+
+    </dl>
+</div>
+@using (Html.BeginForm("Delegate", "User", FormMethod.Post))
+{
+    <div>
+        
+        <input type="hidden" name="userID" value = "@Model.userID"/>
+    
+        <p>From: <input type="text" id="delstart" name="from">  
+           To: <input type="text" id="delend" name="toto"></p>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Confirm" class="btn btn-danger" />
+            </div>
+        </div>
+    </div>
+}
+
+<p>
+    
+    @Html.ActionLink("Back to List", "UserList")
+</p>
+<div>
+    <p>
+        @if (NO_DATE_ERROR_MESSAGE != null)
+        {
+            <div class="alert alert-warning">
+                @NO_DATE_ERROR_MESSAGE.ToString()
+            </div>
+        }
+    </p>
+</div>

@@ -1,0 +1,125 @@
+﻿@model IEnumerable<Inventory_mvc.Models.User>
+@using Inventory_mvc.Utilities;
+
+@{
+    ViewBag.Title = "UserList";
+    var delegateMessage = TempData["DelegateMessage"];
+    var removeDelegateMessage = TempData["RmvDelMessage"];
+    var assignRepMessage = TempData["AssignRepMessage"];
+    var assignRepErrorMessage = TempData["AssignRepErrorMessage"];
+    var removedDelegation = TempData["RemoveDelegationdMessage"];
+
+    int roleID = ViewBag.Role;
+
+}
+
+<h2>UserList</h2>
+
+<p>
+     @Html.ActionLink("Edit Profile", "Edit")
+</p>
+<table class="table">
+    <tr>
+        
+        <th>
+            @Html.DisplayNameFor(model => model.name)
+        </th>
+        
+        <th>
+            @Html.DisplayNameFor(model => model.roleInfo.roleName)
+        </th>
+       
+        <th>
+            @Html.DisplayNameFor(model => model.delegationStart)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.delegationEnd)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        
+        <td>
+            @Html.DisplayFor(modelItem => item.name)
+        </td>
+        
+        <td>
+            @Html.DisplayFor(modelItem => item.roleInfo.roleName)
+        </td>
+               
+        <td>
+            @Html.DisplayFor(modelItem => item.delegationStart)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.delegationEnd)
+        </td>
+
+        <td>
+@if (roleID == (int)UserRoles.RoleID.DepartmentHead)
+{
+    if (item.roleInfo.roleID == (int)UserRoles.RoleID.Employee || item.roleInfo.roleID == (int)UserRoles.RoleID.UserRepresentative)
+    {
+       
+        @Html.ActionLink("Delegate", "Delegate", new { id = item.userID })
+    }<p> </p>
+    if (item.roleInfo.roleID == (int)UserRoles.RoleID.ActingDepartmentHead || item.roleInfo.roleID == (int)UserRoles.RoleID.Employee)
+    {
+        @Html.ActionLink("Assign Rep", "Assign_Rep", new { id = item.userID },
+                new { onclick = "return confirm('Are you sure you wish to Assign Representative to this staff?');" })
+    }<p> </p>
+    if (item.roleInfo.roleID == (int)UserRoles.RoleID.ActingDepartmentHead)
+    {
+        @Html.ActionLink("Remove Delegate", "Remove_Delegate", new { id = item.userID },
+                new { onclick = "return confirm('Are you sure you wish to remove delegation to this staff?');" })
+    }
+}
+           
+        </td>
+    </tr>
+}
+
+</table>
+<div>
+    <p>
+        @if (delegateMessage != null)
+        {
+            <div class="alert alert-success">
+                @delegateMessage.ToString()
+            </div>
+        }
+
+        @if (removeDelegateMessage != null)
+        {
+            <div class="alert alert-warning">
+                @removeDelegateMessage.ToString()
+            </div>
+        }
+       
+        @if (assignRepMessage != null)
+        {
+            <div class="alert alert-success">
+                @assignRepMessage.ToString()
+            </div>
+        }
+
+        @if (assignRepErrorMessage != null)
+        {
+            <div class="alert alert-danger">
+                @assignRepErrorMessage.ToString()
+            </div>
+        }
+        @if (removedDelegation != null)
+        {
+            <div class="alert alert-success">
+                @removedDelegation.ToString()
+            </div>
+        }
+
+
+    </p>
+</div>
+
+
+

@@ -1,0 +1,127 @@
+﻿@*@model IEnumerable<Inventory_mvc.ViewModel.Disbursement>*@
+@model PagedList.IPagedList<Inventory_mvc.ViewModel.Disbursement>
+@using PagedList.Mvc;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+
+@{
+    ViewBag.Title = "View";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<h2>@ViewBag.Message</h2>
+<h2>Disbursement List</h2>
+@if (TempData["Successful"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Successful"].ToString()
+    </div>
+}
+else if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"].ToString()
+    </div>
+}
+<div>
+
+    @using (Html.BeginForm())
+    {
+        <div class="form-inline">
+            @Html.Label("Department Name : ")
+
+            @Html.DropDownList("ID", (List<SelectListItem>)ViewData["list"], new { onchange = "form.submit();", id = "deptCode", @class = "form-control", style = "width: 20%" })
+
+        </div>
+
+        <div class="form-inline">
+
+            @Html.Label("Collection Point: ")
+            @Html.Label((string)ViewBag.Point)
+            </div>
+
+            <div class="form-inline">
+
+                @Html.Label("Representative :")
+                @Html.Label((string)ViewBag.rp)
+                </div>
+             <br />
+                <a href="#" id="printAsPDF" onclick="downloadAsPDF()">Download List as PDF</a>
+                }
+            </div>
+<br />
+@if (Model.Count() == 0)
+{
+    <h4><i>There is no item.</i></h4>
+}
+else
+{
+
+    <table class="table">
+        <tr>
+            <th>
+                @Html.Label("Item Description")
+            </th>
+            <th></th>
+            <th>
+                @Html.Label("Quantity")
+            </th>
+            <th>
+                @Html.Label("Actual Disbursed Quantity")
+            </th>
+            <th>
+
+            </th>
+        </tr>
+        @for (int i = 0; i < Model.Count(); i++)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => Model.ToList()[i].itemDescription)
+                    <input type="hidden" name="[@i].itemDescription" value="@Model.ToList()[i].itemDescription" />
+                </td>
+                <td>
+                    @Html.HiddenFor(modelItem => Model.ToList()[i].itemCode)
+                    <input type="hidden" id="@i" name="[@i].itemCode" value="@Model.ToList()[i].itemCode" />
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => Model.ToList()[i].quantity)
+                    <input type="hidden" id="AllocateQty[@i]" name="[@i].quantity" value="@Model.ToList()[i].quantity" />
+                </td>
+                <td>
+                    <input type="number" id="ActualQty[@i]" class="form-control"  value="@Model.ToList()[i].actualQty" min="0" max="@Model.ToList()[i].quantity" required />
+                </td>
+                <td>
+                    <input type="button" name="button" class="btn btn-success" value="Save" onclick="SaveData(@i)" />
+                </td>
+            </tr>
+        }
+    </table>
+
+
+    @:Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+    @Html.PagedListPager(Model, page => Url.Action("DisbursementList",
+                     new { page }))
+
+    <div>
+        <input type="button" name="button" class="btn btn-success" value="Submit" onclick="update()" />
+    </div>
+
+}
+
+    <script>
+        var selectedItem = sessionStorage.getItem("TmpDept");  
+        $('#ID').val(selectedItem);
+
+        var deptCode = $('#deptCode').val();
+
+
+        function downloadAsPDF() {
+            window.location.href = '@Url.Action("GenerateDisbursementListPDF", "ManageRequisitions")?ID=' + deptCode;
+        }
+
+        function SaveData(i) {
+            var ActualQty = document.getElementById("ActualQty[" + i + "]").value; // convert form to array
+            var itemCode = document.getElementById(i).value; // convert form to array
+        }
+    </script>

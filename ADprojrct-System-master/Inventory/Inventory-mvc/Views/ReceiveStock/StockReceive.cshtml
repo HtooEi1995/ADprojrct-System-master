@@ -1,0 +1,191 @@
+﻿@model IEnumerable<Inventory_mvc.Models.Purchase_Detail>
+
+@{
+    ViewBag.Title = "StockReceive";
+    var errorMessage = TempData["Items updated"];
+  
+
+}
+
+<!doctype html>
+<html>
+
+<head>
+
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="/resources/demos/style.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+  $( function() {
+      $("#datepicker").datepicker();
+  } );
+    </script>
+
+</head>
+
+<body>
+
+    <h2 style="margin-bottom:20px;">Stock Receive</h2>
+    <div>
+        @if (errorMessage != null)
+        {
+            <div class="alert alert-danger">
+                No records have been saved.
+            </div>
+        }
+    </div>
+            @using (Html.BeginForm("StockReceive", "ReceiveStock", FormMethod.Post))
+            {
+
+               
+                    <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+                        <div class="col-md-2">
+                            @Html.Label("PO Number", htmlAttributes: new { @class = "control-label" })
+                            </div>
+                            <div class="col-md-10">
+                                <input type="text" value="@ViewBag.PONumber" name="searchPONumber" class="form-control" style="width: 200px; display: inline;" required/>
+                               
+                                <input type="submit" value="Search" class="btn btn-primary" style=" margin-left:10px;" />
+
+                            </div>
+                        </div>
+
+                    <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+                        <div class="col-md-2">
+                            @Html.Label("Supplier", htmlAttributes: new { @class = "control-label" })
+                            </div>
+                            <div class="col-md-10">
+                                @Html.TextBox("showSupplier", ViewBag.Supplier as string, new { @class="form-control", @style= "width: 200px; display: inline;", @readonly = "readonly" })
+                            </div>
+                        </div>
+
+                 
+                    }
+                    @using (Html.BeginForm("UpdateReceived", "ReceiveStock", FormMethod.Get))
+                    {
+
+
+                     
+                            <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+                                <div class="col-md-2">
+                                    @Html.Label("DO Number", htmlAttributes: new { @class = "control-label" })
+                                    </div>
+                                    <div class="col-md-10">
+                                        <input type="text" name="DONumber" value="@ViewBag.DOnumber"  class="form-control" style="width: 200px; display: inline;" required />
+                                      
+                                    </div>
+                                </div>
+
+                            <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+                                <div class="col-md-2">
+                                    @Html.Label("Received Date", htmlAttributes: new { @class = "control-label" })
+                                    </div>
+                                
+                                    <div class="col-md-10">
+                                        <input type="text" id="datepicker" name="ReceivedDate" value="@ViewBag.ReceivedDate"  class="form-control" style="width: 200px; display: inline; margin-bottom:30px;" required />
+                                    </div>
+                                </div>
+
+                            
+
+                            <input type="hidden" value="@ViewBag.PONumber" name="PONumber" />
+                            <input type="hidden" value="@ViewBag.Supplier" name="supplier" />
+
+
+
+
+                            <table class="table">
+                                <tr>
+                                    <th>
+                                        @Html.Label("Item Code")
+                                    </th>
+                                    <th>
+                                        @Html.Label("Description")
+                                    </th>
+                                    <th>
+                                        @Html.Label("Ordered")
+                                    </th>
+                                    <th>
+                                        @Html.Label("Unreceived")
+                                    </th>
+                                    <th>
+                                        @Html.Label("Received")
+                                    </th>
+                                    <th>
+                                        @Html.Label("UOM")
+                                    </th>
+                                    <th>
+                                        @Html.Label("Remarks")
+                                    </th>
+                                </tr>
+
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.itemCode)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Stationery.description)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.qty)
+                                        </td>
+                                        <td>
+                                            @{
+                                                int fulfilled;
+                                                if (item.fulfilledQty.HasValue)
+                                                {
+                                                    fulfilled = item.fulfilledQty.Value;
+                                                }
+                                                else
+                                                {
+                                                    fulfilled = 0;
+
+                                                }
+                                                int unfulfilled = item.qty - fulfilled;
+                                                string Unreceived = unfulfilled.ToString();
+                                            }
+                                            @Html.Label(Unreceived)
+                                        </td>
+                                        <td>
+                                            @*//input for received*@
+                                            <div class="form-inline">
+                                                <input type="number" name="num-@item.itemCode" value="0" min="0" max=@unfulfilled class="form-control" placeholder="0" />
+
+                                            </div>
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Stationery.unitOfMeasure)
+                                        </td>
+                                        <td>
+                                            @*//input for remarks*@
+                                            <input type="text" name="rem-@item.itemCode" class="form-control" value="@item.remarks" />
+                                        </td>
+                                    </tr>
+                                                }
+
+
+                            </table>
+                            <div class="form-group">
+                       
+                                    <input type="submit" name="sbutton" value="Submit All" class="btn btn-primary" />
+                                    <input type="submit" name="sbutton" value="Submit" class="btn btn-primary" style="margin-left: 10px" />
+                               
+                            </div>
+                            }
+
+    <br />
+    <br />
+    <br />
+    <br />
+</body>
+
+
+
+
+</html>
+
+<script>
+</script>

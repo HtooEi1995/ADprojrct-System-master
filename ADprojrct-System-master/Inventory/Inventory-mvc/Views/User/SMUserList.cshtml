@@ -1,0 +1,116 @@
+﻿@model IEnumerable<Inventory_mvc.Models.User>
+
+@using Inventory_mvc.Utilities;
+
+            
+@{
+                 ViewBag.Title = "SMUserList";
+    var delegateMessage = TempData["DelegateMessage"];
+    var removeDelegateMessage = TempData["RmvDelMessage"];
+    var createMessage = TempData["CreateMessage"];
+    var promoteMessage = TempData["PromoteMessage"];
+    var promoteErrorMessage = TempData["PromoteErrorMessage"];
+    var demoteErrorMessage = TempData["DemoteErrorMessage"];
+    var demoteMessage = TempData["DemoteMessage"];
+}
+
+<h2>User List</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create") | @Html.ActionLink("Edit Profile", "Edit")
+</p>
+<table class="table">
+    <tr>
+       
+        <th>
+            @Html.DisplayNameFor(model => model.name)
+        </th>             
+        <th>
+            @Html.DisplayNameFor(model => model.roleInfo.roleName)
+        </th>
+       
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        
+        <td>
+            @Html.DisplayFor(modelItem => item.name)
+        </td>       
+        <td>
+            @Html.DisplayFor(modelItem => item.roleInfo.roleName)
+        </td>       
+       
+        <td>
+            @if (item.roleInfo.roleID == (int)UserRoles.RoleID.StoreSupervisor)
+            {
+                @Html.ActionLink("Demote", "Demote", new { id = item.userID },
+    new { onclick = "return confirm('Are you sure you wish to demote this staff?');" })
+
+            }
+            else if (item.roleInfo.roleID == (int)UserRoles.RoleID.StoreClerk)
+            {
+                @Html.ActionLink("Promote", "Promote", new { id = item.userID },
+    new { onclick = "return confirm('Are you sure you wish to promote this staff?');" })
+            }
+            <p> </p>
+          
+            
+        </td>
+    </tr>
+}
+
+</table>
+<div>
+    <p>
+        @if (delegateMessage != null)
+        {
+            <div class="alert alert-success">
+                @delegateMessage.ToString()
+            </div>
+        }
+
+        @if (removeDelegateMessage != null)
+        {
+            <div class="alert alert-success">
+                @removeDelegateMessage.ToString()
+            </div>
+        }
+
+        @if (createMessage != null)
+        {
+            <div class="alert alert-success">
+                @createMessage.ToString()
+            </div>
+        }
+
+        @if (promoteMessage != null)
+        {
+            <div class="alert alert-success">
+                @promoteMessage.ToString()
+            </div>
+        }
+
+        @if (promoteErrorMessage != null)
+        {
+            <div class="alert alert-danger">
+                @promoteErrorMessage.ToString()
+            </div>
+        }
+
+        @if (demoteMessage != null)
+        {
+            <div class="alert alert-danger">
+                @demoteMessage.ToString()
+            </div>
+        }
+
+        @if (demoteErrorMessage != null)
+        {
+            <div class="alert alert-danger">
+                @demoteErrorMessage.ToString()
+            </div>
+        }
+    </p>
+</div>

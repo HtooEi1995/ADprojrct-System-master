@@ -1,0 +1,111 @@
+﻿@*@model IEnumerable<Inventory_mvc.ViewModel.Disbursement>*@
+@model PagedList.IPagedList<Inventory_mvc.ViewModel.Disbursement>
+
+
+@using PagedList.Mvc;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+
+
+
+@{
+    ViewBag.Title = "View";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    List<Inventory_mvc.Models.Requisition_Detail> requisitionList = (List<Inventory_mvc.Models.Requisition_Detail>)TempData["requisitionListbyrequest"];
+}
+<style>
+    body {
+    }
+
+    table {
+        border-collapse: separate;
+        counter-reset: Count-Value;
+    }
+
+    tr td:first-child:before {
+        counter-increment: Count-Value;
+        content: counter(Count-Value);
+    }
+
+    tab1 {
+        padding-left: 1em;
+    }
+
+    tab2 {
+        padding-left: 2em;
+    }
+
+    tab3 {
+        padding-left: 3em;
+    }
+</style>
+<h2 class="text-info" style="position:relative;text-align:left;left:15%;font-family:'Bookman Old Style'">Item Ready For Collection</h2>
+<div class="container" style="text-align:left;position:relative;left:15%;padding:10px">
+
+    @using (Html.BeginForm())
+    {<div>
+
+        @Html.Label("Department Name:")
+        @Html.Label((string)ViewBag.deptName)
+    </div>
+    <div style="width:50%">
+        @Html.Label("Collection Point: ")
+
+        @Html.Label((string)ViewBag.Point)
+    </div>
+    <div style="width:50%">
+        @Html.Label("Representative: ")
+
+        @Html.Label((string)ViewBag.rp)
+
+    </div>
+    }
+</div>
+@{
+    List<SelectListItem> list = new List<SelectListItem>();
+
+    var data = new[]
+        {
+           new SelectListItem {Value = "1",Text= "List by Items"},
+        new SelectListItem {Value  = "2",Text =  "List by Request"}
+    };
+    list = data.ToList();
+
+}
+@using (Html.BeginForm("Collect_Item", "CollectionPoint", FormMethod.Get))
+{
+    <div class="container" style="text-align:right;position:relative;right:37%">
+        @Html.Label("View by: ")
+
+        @*@Html.DropDownList("ddl", new SelectList(list, "Value", "Text"), new { @onchange = "SelectedIndexChanged()", @id = "ddl1" })*@
+        <select name="ddl" id="ddl1" onchange="SelectedIndexChanged()">
+            @foreach (var i in new SelectList(list, "Value", "Text"))
+            {
+                <option value="@i.Value" selected>@i.Text</option>
+            }
+
+        </select>
+    </div>
+
+
+    <div id="partialPlaceHolder" style="display:none;">
+        
+    </div>
+
+    <script>
+
+    function SelectedIndexChanged() {
+
+      var selectedID = ($('#ddl1 option:selected').val());
+
+      $.get('@Url.Action("Collect_Item2", "CollectionPoint")/' + selectedID, function (data) {
+
+          /* data is the pure html returned from action method, load it to your page */
+          $('#partialPlaceHolder').html(data);
+          /* little fade in effect */
+          $('#partialPlaceHolder').fadeIn('fast');
+      });
+
+    };
+    </script>
+
+}

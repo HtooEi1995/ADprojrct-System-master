@@ -1,0 +1,409 @@
+﻿@model IEnumerable<Inventory_mvc.Models.Purchase_Detail>
+
+
+
+@{
+    ViewBag.Title = "Raise Purchase Order";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var errorMessageqty = TempData["ErrorMessageqty"];
+    var errorMessage = TempData["ErrorMessage"];
+    var qtyErrorMessage = TempData["dQtyErrorMessage"];
+    var priceErrorMessage = TempData["PriceErrorMessage"];
+    var itemCodeErrorMessage = TempData["ItemCodeErrorMessage"];
+    var supplierCodeErrorMessage = TempData["SupplierCodeErrorMessage"];
+    var exceptionMessage = TempData["ExceptionMessage"];
+    var duplicateMessage = TempData["DuplicateEntryMessage"];
+
+}
+
+@if (errorMessage != null)
+{
+    <div class="alert alert-danger">
+        @errorMessage.ToString()
+    </div>
+}
+
+@if (duplicateMessage != null)
+{
+    <div class="alert alert-danger">
+        @duplicateMessage.ToString()
+    </div>
+}
+
+
+
+
+
+    <!DOCTYPE html>
+
+    <html>
+    <head>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
+        <meta name="viewport" content="width=device-width" />
+        <title>ListPurchaseOrders</title>
+        <style>
+            .modal {
+                display: none; /* Hidden by default */
+                position: fixed; /* Stay in place */
+                z-index: 1; /* Sit on top */
+                padding-top: 100px; /* Location of the box */
+                left: 0;
+                top: 0;
+                width: 100%; /* Full width */
+                height: 100%; /* Full height */
+                overflow: auto; /* Enable scroll if needed */
+                background-color: rgb(0,0,0); /* Fallback color */
+                background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            }
+
+            /* Modal Content */
+            .modal-content {
+                background-color: #fefefe;
+                margin: auto;
+                padding: 20px;
+                border: 1px solid #888;
+                width: 80%;
+            }
+
+            /* The Close Button */
+            .close {
+                color: #aaaaaa;
+                float: right;
+                font-size: 28px;
+                font-weight: bold;
+            }
+
+                .close:hover,
+                .close:focus {
+                    color: #000;
+                    text-decoration: none;
+                    cursor: pointer;
+                }
+        </style>
+
+    </head>
+    <body>
+
+
+        <h2>Purchase Order Generation List</h2>
+
+
+        @using (Html.BeginForm("RaisePurchaseOrder", "Purchase", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+
+
+            <div class="form-horizontal">
+
+                <hr />
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <div class="form-group" style="display: none">
+
+                    @Html.Label("Order Number", htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class=""col-xs-4">
+
+                        <input type="text" name="orderNo" value="@ViewBag.orderNo" class="form-control" />
+
+                    </div>
+                </div>
+
+                <div class="form-group">
+
+
+                    @Html.Label("Item Name", htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-xs-4">
+
+                        @Html.DropDownList("itemCode", (SelectList)ViewBag.itemCodeList, string.Empty, new { @id="ddlist", @onchange= "valueSelected()", @required = "required", @class = "form-control" })
+            
+                    
+
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    @Html.Label("Item Code", htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-xs-4">
+                   
+                            <input type="text" value=@ViewBag.itemcode class="form-control" readonly />
+  
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    
+
+                    @Html.Label("Quantity", htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-xs-4">
+
+                        <input type="number" name="qty" value="@ViewBag.qty" min="@ViewBag.qty" max="9999" required class="form-control"/>
+                        @Html.ValidationMessage("qty", "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+
+                    @Html.Label("Price", htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-xs-4">
+                        @if (Session["pd"] != null)
+                        {
+                            decimal price = (decimal)Session["price"];
+                            <input name="price" value=@price class="form-control" required />
+                        }
+                        else
+                        {
+                            <input name="price" type="text" value=@ViewBag.price class="form-control" required/>
+                        }
+                      
+                        @Html.ValidationMessage("price", "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.Label("Supplier", htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-xs-4">
+
+                        @if (ViewBag.supplierList != null)
+                        {
+                        @Html.DropDownList("supplierCode", (SelectList)ViewBag.supplierList, new { @class="form-control",  required = "required"})
+                        }
+                        else
+                        {
+                            <input type="text" value="" class="form-control" readonly  />
+                        }
+                        @Html.ValidationMessage("supplierCode", "", new { @class = "text-danger" })
+
+                    </div>
+
+                    <div class="form-group">
+
+                    </div>
+                    @Html.Label("Remarks", htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-xs-4">
+
+                        <input type="text" value="" placeholder="Input remark here" name="remarks" class="form-control"/>
+                     
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" value="Add" class="btn btn-success" />
+                    </div>
+                </div>
+            </div>
+        }
+
+
+
+        <h4>Item List</h4>
+        <table class="table">
+            <tr>
+                <th>
+                    @Html.Label("Item Code")
+                </th>
+                <th>
+                    @Html.Label("Description")
+                </th>
+
+                <th>
+                    @Html.Label("Price")
+                </th>
+
+                <th>
+                    @Html.Label("Quantity")
+                </th>
+
+                <th>
+                    @Html.Label("Total Price")
+                </th>
+
+             
+
+                <th>
+                    @Html.Label("Remarks")
+                </th>
+
+            </tr>
+
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.itemCode)
+                    </td>
+                    <td>
+                        @{
+                            Inventory_mvc.Models.StationeryModel Entity = new Inventory_mvc.Models.StationeryModel();
+                            Inventory_mvc.Models.Stationery s = new Inventory_mvc.Models.Stationery();
+
+
+                            s = Entity.Stationeries.Where(x => x.itemCode == item.itemCode).First();
+                            String description = s.description;
+
+                            @Html.Label(description)
+
+
+
+                        }
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.price)
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.qty, new { id = "qty" + item.itemCode })
+                    </td>
+
+                    <td>
+                        @{
+                            int totalPrice = (int)item.price * item.qty;
+                        }
+                        @Html.Label(totalPrice.ToString(), new { id = "price" + item.itemCode })
+                    </td>
+
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.remarks)
+                    </td>
+
+                
+
+                    <td>
+                      
+                        <button name="@item.itemCode" onclick="showModal(self)" class="btn btn-primary" style="margin-right: 5px;">Edit</button>
+
+                        @Html.ActionLink("Delete", "DeletePD",  new { delItemCode = item.itemCode }, new{ @class = "btn btn-danger" })
+                    </td>
+                </tr>
+                            }
+
+        </table>
+
+        <br />
+        <div>
+            @Html.ActionLink("Generate Purchase Order", "GeneratePO", "Purchase", null, new { @class = "btn btn-success" })
+            @Html.ActionLink("Clear", "ClearSession", "Purchase", new { @class = "btn btn-danger" })
+        </div>
+
+
+
+
+
+
+
+    
+
+
+
+        <div>
+            <br />
+            <br />
+            @Html.ActionLink("Back to PO List", "ListPurchaseOrders", "Purchase", new { style = "float: left" })
+            <br />
+            <br />
+
+        </div>
+
+
+        <!-- The Modal Box -->
+        <div id="myModal" class="modal">
+
+            <!-- Modal content -->
+            <div class="modal-content" style="width: 40%">
+                @using (Html.BeginForm("UpdatePD", "Purchase", FormMethod.Post))
+            {
+                <label>Item Code</label>
+                <input type="text" name="ditemCode" class="form-control" />
+                <br />
+                <label>Price</label>
+                <input type="number" name="dprice" min="0.01" step="any" required class="form-control" />
+                <br />
+
+                <label>Quantity</label>
+                <input type="number" name="dqty" min="1" max="9999" required class="form-control" />
+                <br />
+
+                <label>Remarks</label>
+                <input type="text" name="dremarks" class="form-control" />
+                <br />
+                <input type="submit" value="Update" id="modalSubmit" onclick="modalSubmitButtonClick"  class="btn btn-success"/>
+                <br />
+                <span class="close" onclick="close">&times;</span>
+            }
+        </div>
+
+        </div>
+
+
+
+
+        <script>
+
+            // Get the modal
+            var modal = document.getElementById('myModal');
+
+            // Get the <span> element that closes the modal
+            var span = document.getElementsByClassName("close")[0];
+
+            var pricetbox = document.getElementById('itcode');
+
+            var descriptiontbox = document.getElementById('defaultPrice');
+
+        var modalPrice = document.getElementById('dprice');
+
+        var modalQty = document.getElementById('dqty');
+
+            $('button').click(function () {
+
+            modal.style.display = "block";
+            $("[name='ditemCode']").val($(this).attr('name'));
+            //change this to refer to already exisint value
+            $("[name='dprice']").val();
+            $("[name='dqty']").val();
+
+        });
+
+            function close() {
+                modal.style.display = "none";
+            }
+
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function () {
+            modal.style.display = "none";
+        }
+
+            // When the user clicks anywhere outside of the modal, close it
+            window.onclick = function (event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            }
+
+            ////on selecting from dropdownlist display item description
+
+            @{
+            List<Inventory_mvc.Models.Stationery> stats = (List<Inventory_mvc.Models.Stationery>)ViewBag.AllItems;
+
+
+        }
+            function valueSelected() {
+
+            var ddlist = $("#ddlist").val();
+          
+            window.location.href = '@Url.Action("GetDescrpAndPrice", "Purchase")?itemcode=' + ddlist;
+
+            }
+
+
+
+        </script>
+
+    </body>
+
+</html>

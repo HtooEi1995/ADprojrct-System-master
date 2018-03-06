@@ -1,0 +1,79 @@
+﻿@*@model IEnumerable<Inventory_mvc.Models.Department>*@
+@model PagedList.IPagedList<Inventory_mvc.Models.Department>
+@using Inventory_mvc.Utilities;
+@using PagedList.Mvc;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+
+
+
+@{
+    ViewBag.Title = "View";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Department List</h2>
+@if (ViewBag.RoleID != (int)UserRoles.RoleID.StoreClerk)
+{
+<p>
+    @Html.ActionLink("Create New Department", "CreateDepartment")
+</p>
+}
+<table class="table">
+    <tr>
+        <th>
+            @Html.Label("Department Code")
+        </th>
+        <th>
+            @Html.Label("Department Name")
+        </th>
+        <th>
+            @Html.Label("Contact Name")
+        </th>
+        <th>
+            @Html.Label("Phone No:")
+        </th>
+        <th>
+            @Html.Label("Fax No:")
+        </th>
+        <th>
+            @Html.Label("Collection Point Name")
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.departmentCode)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.departmentName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.contactName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.phoneNo)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.faxNo)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Collection_Point.collectionPointName)
+        </td>
+@if (ViewBag.RoleID != (int)UserRoles.RoleID.StoreClerk)
+{
+        <td>
+            @Html.ActionLink("Edit", "EditDepartment", new { deptCode = item.departmentCode }) 
+            
+        </td>
+}
+    </tr>
+}
+
+</table>
+Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+
+@Html.PagedListPager(Model, page => Url.Action("ListDepartment",
+                     new {page }))
+

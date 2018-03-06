@@ -1,0 +1,40 @@
+﻿@{
+    Layout = "";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Error</title>
+    <style>
+        .error {
+            background-color: dodgerblue;
+            text-align: center;
+            vertical-align: middle;
+            font-family: Arial;
+            padding: 50px;
+            margin: 0px;
+        }
+
+
+
+    </style>
+</head>
+<body style= "margin: 0px;">
+    <div class="error">
+       
+        @if ((bool)Session["auth"] == false && Session["role"] != null) {
+
+            <p>You are not permitted to access this page. Please contact your friendly IT helpdesk.  </p>
+
+        }
+        else {
+            <p>Please @Html.ActionLink("log in.", "Login", "Home")</p>
+        }
+
+        <img style="margin: 0 auto;" src="~/Images/dribble_1x.jpg" />
+
+    </div>
+</body>
+</html>

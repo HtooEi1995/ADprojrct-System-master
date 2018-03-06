@@ -1,0 +1,323 @@
+﻿<!DOCTYPE html>
+<html lang="en-us" style="height: 100%;width:100%">
+@using Inventory_mvc.Utilities;
+
+
+
+<head>
+    <meta charset="utf-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewBag.Title - Logic University Stationery Store Inventory System</title>
+
+    <!--
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+        -->
+
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+    <style>
+        .dropdown-submenu {
+            position: relative;
+        }
+
+            .dropdown-submenu.dropdown-menu {
+                top: 0;
+                left: 100%;
+                margin-top: -1px;
+            }
+
+        body {
+            padding: 0px;
+            display: flex;
+            margin: 0px;
+            padding: 0px;
+            overflow-x: hidden;
+            min-height: 100vh;
+            width: 100%;
+            flex-direction: column;
+        }
+
+        main {
+            flex: 1;
+            padding: 1em;
+            width: 100%;
+        }
+
+        header {
+            padding: 1em;
+            width: 100%;
+        }
+
+        footer {
+            padding: 1em;
+            width: 100%;
+            position: relative;
+            left: 40%;
+            bottom: 0;
+            z-index: -99;
+        }
+    </style>
+
+
+</head>
+
+<body>
+
+    <header class="container-fluid" style="position:relative;text-align:center;top:50%"><a href="#"><img src="~/Images/TopLogo.jpg" /></a></header>
+
+    <nav class="navbar-default">
+        <div class="container-fluid">
+
+            <ul class="nav nav-tabs">
+                <li>@Html.ActionLink("Home", "Index", "Home", null, new { @style = "color:#000aaa;" })</li>
+                @if(Convert.ToInt32(HttpContext.Current.Session["role"]) == 3 || Convert.ToInt32(HttpContext.Current.Session["role"]) == 4 || Convert.ToInt32(HttpContext.Current.Session["role"]) == 5 || Convert.ToInt32(HttpContext.Current.Session["role"]) == 6 || Convert.ToInt32(HttpContext.Current.Session["role"]) == 7)
+                {
+
+                    <li class="dropdown">
+                        <a class="btn btn-primary dropdown-toggle" style="width:120px" type="button" data-toggle="dropdown" href="#">
+                            Request
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>@Html.ActionLink("Browse Stationery Catalogue", "BrowseCatalogue", "RaiseRequisition")</li>
+                            <li>@Html.ActionLink("New Request", "NewRequisition", "RaiseRequisition")</li>
+                            <li>@Html.ActionLink("View Request", "Index", "ListRequisitions")</li>
+
+                        </ul>
+                    </li>}
+                @if (Convert.ToInt32(HttpContext.Current.Session["role"]) == 5 || Convert.ToInt32(HttpContext.Current.Session["role"]) == 4 || Convert.ToInt32(HttpContext.Current.Session["role"]) == 2 || Convert.ToInt32(HttpContext.Current.Session["role"]) == 8)
+                {
+                    <li class="dropdown">
+                        <a class="btn btn-primary dropdown-toggle" style="width:120px" type="button" data-toggle="dropdown" href="#">
+                            Collection
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>@Html.ActionLink("Item Ready For Collection", "Collect_Item", "CollectionPoint")</li>
+                            <li>@Html.ActionLink("Pending Item", "Pending_Item", "CollectionPoint")</li>
+                            <li>@Html.ActionLink("Change Collection Point", "UpdateCollectionPoint", "CollectionPoint")</li>
+                        </ul>
+                    </li>
+                }
+                @if (Convert.ToInt32(HttpContext.Current.Session["role"]) == 2 || Convert.ToInt32(HttpContext.Current.Session["role"]) == 3 || Convert.ToInt32(HttpContext.Current.Session["role"]) == 4 || Convert.ToInt32(HttpContext.Current.Session["role"]) == 5 || Convert.ToInt32(HttpContext.Current.Session["role"]) == 6 || Convert.ToInt32(HttpContext.Current.Session["role"]) == 7 || Convert.ToInt32(HttpContext.Current.Session["role"]) == 8)
+                {
+                    <li class="dropdown">
+                        <a class="btn btn-primary dropdown-toggle" style="width:120px" type="button" data-toggle="dropdown" href="#">
+                            Employee
+                        </a>
+                        <ul class="dropdown-menu">
+                            @if (Convert.ToInt32(HttpContext.Current.Session["role"]) == 2 || Convert.ToInt32(HttpContext.Current.Session["role"]) == 3 || Convert.ToInt32(HttpContext.Current.Session["role"]) == 4 || Convert.ToInt32(HttpContext.Current.Session["role"]) == 6 || Convert.ToInt32(HttpContext.Current.Session["role"]) == 7 || Convert.ToInt32(HttpContext.Current.Session["role"]) == 8)
+                            {
+                                <li>@Html.ActionLink("View Employee", "UserList", "User")</li>
+                            }
+
+                            @if (Convert.ToInt32(HttpContext.Current.Session["role"]) == 5)
+                            {
+                                <li>@Html.ActionLink("Manage Employee", "SMUserList", "User")</li>
+                            }
+                        </ul>
+                    </li>}
+                @if (Convert.ToInt32(HttpContext.Current.Session["role"]) == 5 || Convert.ToInt32(HttpContext.Current.Session["role"]) == 6 || Convert.ToInt32(HttpContext.Current.Session["role"]) == 7)
+                {
+                    <li class="dropdown">
+                        <a class="btn btn-primary dropdown-toggle" style="width:120px" type="button" data-toggle="dropdown" href="#">
+                            Manage List
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>@Html.ActionLink("Stationery List", "Index", "Stationery")</li>
+                            <li>@Html.ActionLink("Supplier List", "Index", "Supplier")</li>
+                            <li>@Html.ActionLink("Collection Point List", "Index", "CollectionPoint")</li>
+                            <li>@Html.ActionLink("Department List", "ListDepartment", "Department")</li>
+                        </ul>
+                    </li>}
+                @if (Convert.ToInt32(HttpContext.Current.Session["role"]) == 2 || Convert.ToInt32(HttpContext.Current.Session["role"]) == 5 || Convert.ToInt32(HttpContext.Current.Session["role"]) == 6 || Convert.ToInt32(HttpContext.Current.Session["role"]) == 7 || Convert.ToInt32(HttpContext.Current.Session["role"]) == 8)
+                {
+                    <li class="dropdown">
+                        <a class="btn btn-primary dropdown-toggle" style="width:120px" type="button" data-toggle="dropdown" href="#">Forms</a>
+
+                        <ul class="dropdown-menu">
+
+
+
+
+                            @if (Convert.ToInt32(HttpContext.Current.Session["role"]) == 2 || Convert.ToInt32(HttpContext.Current.Session["role"]) == 5 || Convert.ToInt32(HttpContext.Current.Session["role"]) == 8)
+                            {
+                                <li>
+                                    @Html.ActionLink("Approve Stationery Request", "ManagerRequisition", "ManageRequisitions")
+                                </li>
+                            }
+
+                            @if (Convert.ToInt32(HttpContext.Current.Session["role"]) == 5 || Convert.ToInt32(HttpContext.Current.Session["role"]) == 6 || Convert.ToInt32(HttpContext.Current.Session["role"]) == 7)
+                            {
+                                <li>@Html.ActionLink("Stationery Retrieval Form", "GenerateRetrieveForm", "ManageRequisitions")</li>
+                            }
+                            @if (Convert.ToInt32(HttpContext.Current.Session["role"]) == 5 || Convert.ToInt32(HttpContext.Current.Session["role"]) == 6 || Convert.ToInt32(HttpContext.Current.Session["role"]) == 7)
+                            {
+                                <li>
+                                    @Html.ActionLink("Allocate Stationery", "ClerkRequisition", "ManageRequisitions")
+                                </li>
+                            }
+
+                            @if (Convert.ToInt32(HttpContext.Current.Session["role"]) == 5 || Convert.ToInt32(HttpContext.Current.Session["role"]) == 6 || Convert.ToInt32(HttpContext.Current.Session["role"]) == 7)
+                            {
+                                <li>@Html.ActionLink("Disbursement List", "DisbursementList", "ManageRequisitions")</li>
+                            }
+                            @if (Convert.ToInt32(HttpContext.Current.Session["role"]) == 5 || Convert.ToInt32(HttpContext.Current.Session["role"]) == 6 || Convert.ToInt32(HttpContext.Current.Session["role"]) == 7)
+                            {
+                                <li class="dropdown-submenu">
+                                    <a class="test" href="#">Inventory Adjustment Voucher<span class="caret"></span></a>
+                                    <ul class="dropdown-menu" style="top:20%;left:100%;margin-top:1px">
+                                        <li>@Html.ActionLink("Submit Voucher", "NewVoucher", "AdjustmentVoucher")</li>
+                                        @if (Convert.ToInt32(HttpContext.Current.Session["role"]) == 5 || Convert.ToInt32(HttpContext.Current.Session["role"]) == 6)
+                                        {
+                                            <li>@Html.ActionLink("Approve Voucher", "Index", "AdjustmentVoucher")</li>}
+                                    </ul>
+                                </li>
+                            }
+
+
+
+                        </ul>
+
+                    </li>
+                }
+                @if (Convert.ToInt32(HttpContext.Current.Session["role"]) == 5 || Convert.ToInt32(HttpContext.Current.Session["role"]) == 6 || Convert.ToInt32(HttpContext.Current.Session["role"]) == 7)
+                {
+                    <li class="dropdown">
+                        <a class="btn btn-primary dropdown-toggle" style="width:120px" type="button" data-toggle="dropdown" href="#">Reports</a>
+                        <ul class="dropdown-menu">
+                            <li class="dropdown-submenu">
+                                <a class="test" href="#">Requisition Analysis<span class="caret"></span></a>
+                                <ul class="dropdown-menu" style="top:20%;left:100%;margin-top:1px">
+                                    <li>@Html.ActionLink("Monthly Requisition Amount by Department", "DeptMonthlyRequisitionAmount", "Report")</li>
+
+                                    <li>@Html.ActionLink("Monthly Requisition Amount by Category", "CategoryMonthlyRequisitionAmount", "Report")</li>
+
+                                    <li>@Html.ActionLink("Cumulative Request by Department", "RequisitionCumulativeChart", "Report")</li>
+
+                                    <li>@Html.ActionLink("Requisition Trend by Item", "ItemRequestTrend", "Report")</li>
+                                </ul>
+                            </li>
+                            <li class="dropdown-submenu">
+                                <a class="test" href="#">Reorder Analysis<span class="caret"></span></a>
+                                <ul class="dropdown-menu" style="top:20%;left:100%;margin-top:1px">
+                                    <li>@Html.ActionLink("Yearly Reorder from Supplier", "SupplierYearlyReorderAmount", "Report")</li>
+
+                                    <li>@Html.ActionLink("Monthly Reorder Amount by Category", "CategoryMonthlyReorderAmount", "Report")</li>
+
+                                    <li>@Html.ActionLink("Cumulative Reorder from Supplier", "ReorderAmountCumulativeChart", "Report")</li>
+
+                                    <li>@Html.ActionLink("Comparison of Reorder Items by Supplier", "ItemReorderComparison", "Report")</li>
+
+
+
+
+                                </ul>
+                            </li>
+
+                        </ul>
+                    </li>
+                }
+
+                @if (Convert.ToInt32(HttpContext.Current.Session["role"]) == 5 || Convert.ToInt32(HttpContext.Current.Session["role"]) == 6 || Convert.ToInt32(HttpContext.Current.Session["role"]) == 7)
+                {
+                    <li class="dropdown">
+                        <a class="btn btn-primary dropdown-toggle" style="width:120px" type="button" data-toggle="dropdown" href="#">Stocks</a>
+                        <ul class="dropdown-menu">
+                            <li class="dropdown-submenu">
+                                <a class="test" href="#">Inventory Check<span class="caret"></span></a>
+                                <ul class="dropdown-menu" style="top:20%;left:100%;margin-top:1px">
+                                    <li>@Html.ActionLink("Generate Inventory Checklist", "GenerateInventoryChecklist", "InventoryCheck")</li>
+
+                                    <li>@Html.ActionLink("Inventory Check Report", "ShowDetails", "InventoryCheck")</li>
+                                </ul>
+                            </li>
+                            <li>@Html.ActionLink("View Shortfall List", "List", "CheckShortfall")</li>
+                            <li>@Html.ActionLink("Generate Purchase Order", "RaisePurchaseOrder", "Purchase")</li>
+                            <li>@Html.ActionLink("View Purchase Order", "ListPurchaseOrders", "Purchase")</li>
+                            <li>@Html.ActionLink("Receive Stock", "StockReceive", "ReceiveStock")</li>
+                        </ul>
+                    </li>
+                }
+                @if (HttpContext.Current.Session["role"] != null)
+                {
+
+
+
+                    <li style="position:absolute;right:5%;text-wrap:normal">
+                        @Html.ActionLink(" Welcome! " + HttpContext.Current.Session["Name"] +" - "+ HttpContext.Current.Session["roleName"],null, null, new { @style = "color:#000bbb;" })
+                    </li>
+                }
+
+
+                @if (HttpContext.Current.Session["role"] != null)
+                {
+                    <li style="position:absolute;right:0px">
+                        @Html.ActionLink("Logout", "Logout", "Home", null, new { @style = "color:#000aaa;" })
+                    </li>
+                }
+                else
+                {
+                    <li style="position:absolute;right:0px">
+                        @Html.ActionLink("Login", "Login", "Home", null, new { @style = "color:#000aaa;" })
+                    </li>
+                }
+            </ul>
+        </div>
+    </nav>
+
+
+    <main>
+        <div class="container-fluid">
+            <div class="container body-content">
+
+
+
+
+                @RenderBody()
+
+
+
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <footer>
+
+        &copy; @DateTime.Now.Year - SA45Team3
+
+
+    </footer>
+
+
+
+    @RenderSection("scripts", required: false)
+
+    <script>
+        $(document).ready(function () {
+            $('.dropdown-submenu a.test').on("click", function (e) {
+                //$(this).next('ul').toggle();
+                //e.stopPropagation();
+                //e.preventDefault();
+
+                e.stopPropagation();
+                e.preventDefault();
+                var $parentli = $(this).closest('li');
+                $parentli.siblings('li').find('ul:visible').hide();
+                $parentli.find('> ul').stop().toggle();
+            });
+        });
+    </script>
+</body>
+</html>
